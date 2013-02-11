@@ -1,0 +1,29 @@
+{
+    "name": "oodle/inflect",
+    "type": "library",
+    "description": "inflect - a memoizing inflector for php"
+    "license": "LGPL",
+    "keywords": ["singularize", "pluralize", "inflect", "inflector"],
+    "authors": [
+	{
+	    "name": "Matthew J. Mucklo",
+	    "email": "mmucklo@corp.oodle.com"
+	},
+	{
+	    "name": "Sho Kuwamoto",
+	    "email": "sho@kuwamoto.org"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "require": {
+        "php": ">=5.3.17"
+    },
+    "autoload": {
+        "psr-0": {
+	    "Inflect": "src/"
+	}
+    }
+}
+
