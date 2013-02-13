@@ -185,5 +185,25 @@ class Inflect
         else
             return "$count " . self::pluralize($string);
     }
+
+    /**
+     * Creates a url-safe verison of the string
+     */
+    public static function urlify($string)
+    {
+        // Romanization of alphabet
+        // $string = strtr(...)
+        $string = trim($string);
+	$string = strtolower($string);
+        $string = str_replace(array('\'', '&'), array('', '-and-'), $string);
+        $string = preg_replace('/[^\w\&]+/', '-', $string);
+        $string = str_replace(array('_','----', '---', '--'), '-', $string);
+	$string = str_replace(array('-and-and-and-and-', '-and-and-and-', '-and-and-','-and--and-'), '-and-', $string); 
+
+        if (!$string)
+            $string = '-';
+
+        return $string;
+    }      
 }
 

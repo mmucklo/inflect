@@ -9,7 +9,7 @@ class InflectTest extends PHPUnit_Framework_TestCase
 {
     public function testSingularize()
     {
-        $inflections = ['ox' => 'ox',
+        $inflections = array('ox' => 'ox',
                 'cats' => 'cat',
                 'oxen' => 'ox',
                 'cats' => 'cat',
@@ -18,7 +18,6 @@ class InflectTest extends PHPUnit_Framework_TestCase
                 'houses' => 'house',
                 'sheep' => 'sheep',
                 'buses' => 'bus',
-                'axes' => 'axis',
                 'uses' => 'use',
                 'databases' => 'database',
                 'quizzes' => 'quiz',
@@ -34,17 +33,70 @@ class InflectTest extends PHPUnit_Framework_TestCase
                 'shoes' => 'shoe',
                 'foes' => 'foe',
                 'pianos' => 'piano',
-                'wierdoes' => 'wierdo',
+                'wierdos' => 'wierdo',
                 'toes' => 'toe',
                 'banjoes' => 'banjo',
                 'vetoes' => 'veto',
-                'redoes' => 'redo',
-                ];
+            );
 
         foreach ($inflections as $key => $value)
         {
             print "Testing $key singularizes to: $value\n";
             $this->assertEquals($value, Inflect::singularize($key));
         }
+
+	print "\n";
+    }
+
+    public function testPluralize()
+    {
+        $inflections = array('oxen' => 'ox',
+                'cats' => 'cat',
+                'cats' => 'cat',
+                'purses' => 'purse',
+                'analyses' => 'analysis',
+                'houses' => 'house',
+                'sheep' => 'sheep',
+                'buses' => 'bus',
+                'axes' => 'axis',
+                'uses' => 'use',
+                'databases' => 'database',
+                'quizzes' => 'quiz',
+                'matrices' => 'matrix',
+                'vertices' => 'vertex',
+                'aliases' => 'aliases',
+                'aliases' => 'alias',
+                'octopi' => 'octopus',
+                'axes' => 'axis',
+                'crises' => 'crisis',
+                'crises' => 'crises',
+                'shoes' => 'shoe',
+                'foes' => 'foe',
+                'pianos' => 'piano',
+                'wierdos' => 'wierdo',
+                'toes' => 'toe',
+                'banjos' => 'banjo',
+                'vetoes' => 'veto',
+                );
+        foreach ($inflections as $key => $value)
+        {
+            print "Testing $value pluralizes to: $key\n";
+            $this->assertEquals($key, Inflect::pluralize($value));
+        }
+	print "\n";
+    }
+
+    public function testUrlify()
+    {
+        $urltests = array("This Test's Apostrophe" => 'this-tests-apostrophe',
+                          "@#$%@##^@ @#%@#$%@#$%@#$%@#$%" => '-',
+                          "" => '-',
+                          "_+0990-0&*(&*(*)(&&*)(&*)(32@#%" => '-0990-0-and-32-');
+	foreach ($urltests as $key => $value)
+	{
+            print "Testing $key urlifies to: $value\n";
+            $this->assertEquals($value, Inflect::urlify($key));
+	}
+	print "\n";
     }
 }
