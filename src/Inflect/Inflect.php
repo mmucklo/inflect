@@ -189,7 +189,7 @@ class Inflect
     /**
      * Creates a url-safe verison of the string
      */
-    public static function urlify($string)
+    public static function urlify($string, $separator = '-')
     {
         // Romanization of alphabet
         // $string = strtr(...)
@@ -260,13 +260,14 @@ class Inflect
         $string = strtr($string, $pairs);
         $string = trim($string);
         $string = strtolower($string);
-        $string = str_replace(array('\'', '&'), array('', '-and-'), $string);
-        $string = preg_replace('/[^\w\&]+/', '-', $string);
-        $string = str_replace(array('_','----', '---', '--'), '-', $string);
-        $string = str_replace(array('-and-and-and-and-', '-and-and-and-', '-and-and-','-and--and-'), '-and-', $string); 
+	$and = $separator . 'and';
+        $string = str_replace(array('\'', '&'), array('', $separator . $and . $separator), $string);
+        $string = preg_replace('/[^\w\&]+/', $separator, $string);
+        $string = str_replace(array('_',$separator.$separator.$separator.$separator, $separator.$separator.$separator, $separator.$separator), $separator, $string);
+        $string = str_replace(array($and.$and.$and.$and.$separator, $and.$and.$and.$separator, $and.$and.$separator, $and.$separator.$and.$separator), $and.$separator, $string); 
 
         if (!$string)
-            $string = '-';
+            $string = $separator;
 
         return $string;
     }      

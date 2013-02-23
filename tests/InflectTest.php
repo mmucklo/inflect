@@ -109,6 +109,8 @@ class InflectTest extends PHPUnit_Framework_TestCase
 	{
             print "Testing $key urlifies to: $value\n";
             $this->assertEquals($value, Inflect::urlify($key));
+            print "Testing $key urlifies with '+' to: " . str_replace('-', '+', $value) . "\n";
+            $this->assertEquals(str_replace('-', '+', $value), Inflect::urlify($key, '+'));
 	}
 
 	print "\n";
