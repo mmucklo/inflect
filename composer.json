@@ -3,7 +3,7 @@
     "type": "library",
     "description": "inflect - a memoizing inflector for php",
     "license": "LGPL",
-    "keywords": ["singularize", "pluralize", "inflect", "inflector"],
+    "keywords": ["singularize", "pluralize", "inflect", "inflector", "urlify"],
     "authors": [
 	{
 	    "name": "Matthew J. Mucklo",
