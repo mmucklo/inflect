@@ -263,14 +263,14 @@ class Inflect
         $string = strtr($string, $pairs);
         $string = trim($string);
         $string = strtolower($string);
-        if ($and)
+        if ($ampersand)
         { 
-            $and = $separator . $and;
+            $and = $separator . $ampersand;
             $string = str_replace(array('\'', '&'), array('', $separator . $and . $separator), $string);
         }
         $string = preg_replace('/[^\w]+/', $separator, $string);
         $string = str_replace(array('_',$separator.$separator.$separator.$separator, $separator.$separator.$separator, $separator.$separator), $separator, $string);
-        if ($and)
+        if ($ampersand)
         { 
             $string = str_replace(array($and.$and.$and.$and.$separator, $and.$and.$and.$separator, $and.$and.$separator, $and.$separator.$and.$separator), $and.$separator, $string); 
         }
