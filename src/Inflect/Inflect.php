@@ -188,8 +188,11 @@ class Inflect
 
     /**
      * Creates a url-safe verison of the string
+     * @param $string The string to transform
+     * @param $separator The separator to use to transform non word characters into (default '-')
+     * @param $ampersand Transform '&' to this (e.g. could set this to 'and') (default null)
      */
-    public static function urlify($string, $separator = '-')
+    public static function urlify($string, $separator = '-', $ampersand = null)
     {
         // Romanization of alphabet
         // $string = strtr(...)
@@ -260,11 +263,17 @@ class Inflect
         $string = strtr($string, $pairs);
         $string = trim($string);
         $string = strtolower($string);
-	$and = $separator . 'and';
-        $string = str_replace(array('\'', '&'), array('', $separator . $and . $separator), $string);
-        $string = preg_replace('/[^\w\&]+/', $separator, $string);
+        if ($and)
+        { 
+            $and = $separator . $and;
+            $string = str_replace(array('\'', '&'), array('', $separator . $and . $separator), $string);
+        }
+        $string = preg_replace('/[^\w]+/', $separator, $string);
         $string = str_replace(array('_',$separator.$separator.$separator.$separator, $separator.$separator.$separator, $separator.$separator), $separator, $string);
-        $string = str_replace(array($and.$and.$and.$and.$separator, $and.$and.$and.$separator, $and.$and.$separator, $and.$separator.$and.$separator), $and.$separator, $string); 
+        if ($and)
+        { 
+            $string = str_replace(array($and.$and.$and.$and.$separator, $and.$and.$and.$separator, $and.$and.$separator, $and.$separator.$and.$separator), $and.$separator, $string); 
+        }
 
         if (!$string)
             $string = $separator;
