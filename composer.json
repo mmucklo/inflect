@@ -2,7 +2,7 @@
     "name": "oodle/inflect",
     "type": "library",
     "description": "inflect - a memoizing inflector for php",
-    "license": "LGPL",
+    "license": "MIT",
     "keywords": ["singularize", "pluralize", "inflect", "inflector", "urlify"],
     "authors": [
 	{
