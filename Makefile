@@ -4,4 +4,4 @@ PHP=php
 all:
 
 test:
-	$(PHP) -d zend.enable_gc=1 vendor/phpunit/phpunit/composer/bin/phpunit tests/InflectTest.php
+	$(PHP) -d zend.enable_gc=1 vendor/phpunit/phpunit/composer/bin/phpunit --configuration phpunit.xml-dist
