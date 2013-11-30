@@ -1,4 +1,4 @@
-inflect
+Inflect
 =======
 
 Inflect is an Inflector for PHP

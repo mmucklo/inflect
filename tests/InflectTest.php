@@ -85,34 +85,4 @@ class InflectTest extends PHPUnit_Framework_TestCase
         }
 	print "\n";
     }
-
-    public function testUrlify()
-    {
-        $urltests = array("This Test's Apostrophe" => 'this-tests-apostrophe',
-                          "@#$%@##^@ @#%@#$%@#$%@#$%@#$%" => '-',
-                          "" => '-',
-                          "_+0990-0&*(&*(*)(&&*)(&*)(32@#%" => '-0990-0-and-32-',
-"ò" => 'o',
-"ó" => 'o',
-"ô" => 'o',
-"õ" => 'o',
-"ö" => 'o',
-"ø" => 'o',
-"ù" => 'u',
-"ú" => 'u',
-"û" => 'u',
-"ü" => 'u',
-"ý" => 'y',
-"ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ" => strtolower("AAAAAAAECEEEEIIIIETHNOOOOOOUUUUYTHORNszaaaaaaaeceeeeiiiiethnoooooouuuuythorny")
-			  );
-	foreach ($urltests as $key => $value)
-	{
-            print "Testing $key urlifies to: $value\n";
-            $this->assertEquals($value, Inflect::urlify($key, '-', 'and'));
-            print "Testing $key urlifies with '+' to: " . str_replace('-', '+', $value) . "\n";
-            $this->assertEquals(str_replace('-', '+', $value), Inflect::urlify($key, '+', 'and'));
-	}
-
-	print "\n";
-    }
 }
