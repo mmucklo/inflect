@@ -69,7 +69,6 @@ class Inflect
     static $irregular = array(
         'zombie' => 'zombies',
         'move'   => 'moves',
-        'cow'    => 'kine',
         'foot'   => 'feet',
         'goose'  => 'geese',
         'sex'    => 'sexes',
