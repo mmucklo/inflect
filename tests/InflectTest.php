@@ -37,6 +37,7 @@ class InflectTest extends PHPUnit_Framework_TestCase
                 'toes' => 'toe',
                 'banjoes' => 'banjo',
                 'vetoes' => 'veto',
+                'cows' => 'cow',
             );
 
         foreach ($inflections as $key => $value)
@@ -77,6 +78,7 @@ class InflectTest extends PHPUnit_Framework_TestCase
                 'toes' => 'toe',
                 'banjos' => 'banjo',
                 'vetoes' => 'veto',
+                'cows' => 'cow',
                 );
         foreach ($inflections as $key => $value)
         {
