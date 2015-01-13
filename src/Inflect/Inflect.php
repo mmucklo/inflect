@@ -2,9 +2,17 @@
 
 namespace Inflect;
 
+/**
+ * Inflect Class for PHP
+ */
+
 class Inflect
 {
-    static $plural = array(
+
+    /**
+     * Regular expressions for plural words
+     */
+    private static $plural = array(
         '/(quiz)$/i'               => "$1zes",
         '/^(oxen)$/i'              => "$1",
         '/^(ox)$/i'                => "$1en",
@@ -29,8 +37,11 @@ class Inflect
         '/s$/i'                    => "s",
         '/$/'                      => "s"
     );
-
-    static $singular = array(
+    
+    /**
+     * Regular expressions for singular words
+     */
+    private static $singular = array(
         '/(database)s$/i'           => "$1",
         '/(quiz)zes$/i'             => "$1",
         '/(matr)ices$/i'            => "$1ix",
@@ -66,7 +77,10 @@ class Inflect
         '/s$/i'                     => ""
     );
 
-    static $irregular = array(
+    /**
+     * Irregular singular and plural forms
+     */
+    private static $irregular = array(
         'zombie' => 'zombies',
         'move'   => 'moves',
         'foot'   => 'feet',
@@ -78,6 +92,9 @@ class Inflect
         'person' => 'people'
     );
 
+    /**
+     * Words that cannot be inflected
+     */
     static $uncountable = array(
         'sheep'       => true,
         'fish'        => true,
@@ -92,81 +109,107 @@ class Inflect
         'police'      => true
     );
 
+    /**
+     * Storage for the singular and plural forms
+     */
     private static $pluralCache = array();
     private static $singularCache = array();
 
+    /**
+     * Pluralize a specified string
+     * 
+     * @param  string $string   The string to be pluralized
+     * @return array
+     */
     public static function pluralize($string)
     {
-        if (!$string)
-            return;
+        if ( ! $string) return;
 
-        if (!isset(self::$pluralCache[$string]))
-        {
-            // save some time in the case that singular and plural are the same
-            if (isset(self::$uncountable[$string]))
-            {
+        if ( ! isset(self::$pluralCache[$string])) {
+            /**
+             * Save some time in the case that singular and plural are the same
+             */
+            
+            if (isset(self::$uncountable[$string])) {
                 self::$pluralCache[$string] = $string;
+
                 return $string;
             }
 
-            // check for irregular singular forms
-            foreach (self::$irregular as $pattern => $result)
-            {
+            /**
+             * Check for irregular singular forms
+             */
+            
+            foreach (self::$irregular as $pattern => $result) {
                 $pattern = '/' . $pattern . '$/i';
 
-                if (preg_match($pattern, $string))
-                {
+                if (preg_match($pattern, $string)) {
                     self::$pluralCache[$string] = preg_replace($pattern, $result, $string);
+
                     return self::$pluralCache[$string];
                 }
             }
 
-            // check for matches using regular expressions
-            foreach (self::$plural as $pattern => $result)
-            {
-                if (preg_match($pattern, $string))
-                {
+            /**
+             * Check for matches using regular expressions
+             */
+            
+            foreach (self::$plural as $pattern => $result) {
+                if (preg_match($pattern, $string)) {
                     self::$pluralCache[$string] = $result = preg_replace($pattern, $result, $string);
+
                     return self::$pluralCache[$string];
                 }
             }
 
             self::$pluralCache[$string] = $string;
         }
+
         return self::$pluralCache[$string];
     }
 
+    /**
+     * Singularize a specified string
+     * 
+     * @param  string $string   The string to be singularized
+     * @return array
+     */
     public static function singularize($string)
     {
-        if (!$string)
-            return;
+        if ( ! $string) return;
 
-        if (!isset(self::$singularCache[$string]))
-        {
-            // save some time in the case that singular and plural are the same
-            if (isset(self::$uncountable[strtolower($string)]))
-            {
+        if ( ! isset(self::$singularCache[$string])) {
+            /**
+             * Save some time in the case that singular and plural are the same
+             */
+            
+            if (isset(self::$uncountable[strtolower($string)])) {
                 self::$singularCache[$string] = $string;
                 return $string;
             }
-            // check for irregular plural forms
-            foreach (self::$irregular as $result => $pattern)
-            {
+
+            /**
+             * Check for irregular plural forms
+             */
+            
+            foreach (self::$irregular as $result => $pattern) {
                 $pattern = '/' . $pattern . '$/i';
 
-                if (preg_match($pattern, $string))
-                {
+                if (preg_match($pattern, $string)) {
                     self::$singularCache[$string] = preg_replace($pattern, $result, $string);
+
                     return self::$singularCache[$string];
                 }
             }
 
-            // check for matches using regular expressions
-            foreach (self::$singular as $pattern => $result)
-            {
-                if (preg_match($pattern, $string))
-                {
+            /**
+             * Check for matches using regular expressions
+             */
+            
+            foreach (self::$singular as $pattern => $result) {
+                if (preg_match($pattern, $string)) {
                     self::$singularCache[$string] = preg_replace($pattern, $result, $string);
+
                     return self::$singularCache[$string];
                 }
             }
@@ -177,12 +220,38 @@ class Inflect
         return self::$singularCache[$string];
     }
 
+    /**
+     * Pluralize the specified string with a condition
+     * 
+     * @param  int      $count
+     * @param  string   $string     The string to be pluralized
+     * @return array
+     */
     public static function pluralizeIf($count, $string)
     {
-        if ($count == 1)
-            return "1 $string";
-        else
-            return "$count " . self::pluralize($string);
+        return ($count == 1) ? '1 $string' : '$count ' . self::pluralize($string);
     }
-}
 
+    /**
+     * Takes multiple words separated by spaces or underscores and camelizes them
+     *
+     * @param   string  $string     Input string
+     * @return  string
+     */
+    public static function camelize($string)
+    {
+        return strtolower($string[0]).substr(str_replace(' ', '', ucwords(preg_replace('/[\s_]+/', ' ', $string))), 1);
+    }
+
+    /**
+     * Takes multiple words separated by spaces and underscores them
+     *
+     * @param   string  $string     Input string
+     * @return  string
+     */
+    public static function underscore($string)
+    {
+        return preg_replace('/[\s]+/', '_', trim(strtolower($string)));
+    }
+
+}
