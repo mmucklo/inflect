@@ -11,7 +11,7 @@ Add this line to your composer.json "require" section:
 ```json
     "require": {
        ...
-       "oodle/inflect": "*"
+       "mmucklo/inflect": "*"
 ```
 
 Usage:

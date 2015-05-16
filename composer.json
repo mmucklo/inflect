@@ -1,5 +1,5 @@
 {
-    "name": "oodle/inflect",
+    "name": "mmucklo/inflect",
     "type": "library",
     "description": "inflect - a memoizing inflector for php",
     "license": "MIT",
@@ -7,7 +7,7 @@
     "authors": [
 	{
 	    "name": "Matthew J. Mucklo",
-	    "email": "mmucklo@corp.oodle.com"
+	    "email": "mmucklo@gmail.com"
 	},
 	{
 	    "name": "Sho Kuwamoto",
