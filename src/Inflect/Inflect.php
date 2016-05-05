@@ -31,6 +31,7 @@ class Inflect
     );
 
     static $singular = array(
+        '/(ss)$/i'                  => "$1",
         '/(database)s$/i'           => "$1",
         '/(quiz)zes$/i'             => "$1",
         '/(matr)ices$/i'            => "$1ix",
