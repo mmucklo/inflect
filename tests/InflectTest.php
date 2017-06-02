@@ -1,8 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../vendor/autoload.php');
-require_once(__DIR__ . '/../src/Inflect/Inflect.php');
-
 use Inflect\Inflect;
 
 class InflectTest extends PHPUnit_Framework_TestCase
@@ -12,7 +9,6 @@ class InflectTest extends PHPUnit_Framework_TestCase
         $inflections = array('ox' => 'ox',
                 'cats' => 'cat',
                 'oxen' => 'ox',
-                'cats' => 'cat',
                 'purses' => 'purse',
                 'analyses' => 'analysis',
                 'houses' => 'house',
@@ -53,7 +49,6 @@ class InflectTest extends PHPUnit_Framework_TestCase
     {
         $inflections = array('oxen' => 'ox',
                 'cats' => 'cat',
-                'cats' => 'cat',
                 'purses' => 'purse',
                 'analyses' => 'analysis',
                 'houses' => 'house',
@@ -65,12 +60,9 @@ class InflectTest extends PHPUnit_Framework_TestCase
                 'quizzes' => 'quiz',
                 'matrices' => 'matrix',
                 'vertices' => 'vertex',
-                'aliases' => 'aliases',
                 'aliases' => 'alias',
                 'octopi' => 'octopus',
-                'axes' => 'axis',
                 'crises' => 'crisis',
-                'crises' => 'crises',
                 'shoes' => 'shoe',
                 'foes' => 'foe',
                 'pianos' => 'piano',

@@ -7,4 +7,4 @@ php:
 before_script:
     - COMPOSER_ROOT_VERSION=dev-master composer --prefer-source --dev install
 
-script: vendor/phpunit/phpunit/composer/bin/phpunit --configuration phpunit.xml-dist
+script: vendor/phpunit/phpunit/composer/bin/phpunit --configuration phpunit.xml-dist-dist

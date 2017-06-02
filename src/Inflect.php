@@ -4,6 +4,10 @@ namespace Inflect;
 
 class Inflect
 {
+    public function __construct($locale = 'en') {
+
+    }
+
     static $plural = array(
         '/(quiz)$/i'               => "$1zes",
         '/^(oxen)$/i'              => "$1",

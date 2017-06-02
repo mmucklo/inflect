@@ -21,9 +21,12 @@
         "php": ">=5.3.17"
     },
     "autoload": {
-        "psr-0": {
-	    "Inflect": "src/"
+        "psr-4": {
+	    "Inflect\\": "src/"
 	}
+    },
+    "config": {
+        "bin-dir": "bin"
     }
 }
 
