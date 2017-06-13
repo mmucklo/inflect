@@ -1,5 +1,7 @@
 Inflect
 =======
+[![Build Status](https://travis-ci.org/mmucklo/inflections.svg?branch=master)](https://travis-ci.org/mmucklo/inflections)
+
 
 Inflect is an Inflector for PHP
 
