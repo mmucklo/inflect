@@ -90,4 +90,92 @@ class InflectTest extends PHPUnit_Framework_TestCase
         }
 	print "\n";
     }
+
+    // Uses a list of [input, expected] pairs to avoid duplicate-key dedup.
+    public function testNewIrregularsAndGuards()
+    {
+        $singularizeCases = array(
+            // new irregulars: plural -> singular
+            array('data', 'datum'),
+            array('criteria', 'criterion'),
+            array('phenomena', 'phenomenon'),
+            array('cacti', 'cactus'),
+            array('nuclei', 'nucleus'),
+            array('syllabi', 'syllabus'),
+            array('curricula', 'curriculum'),
+            array('media', 'medium'),
+            array('bacteria', 'bacterium'),
+            // already-singular guard: singular -> singular
+            array('datum', 'datum'),
+            array('criterion', 'criterion'),
+            array('phenomenon', 'phenomenon'),
+            array('cactus', 'cactus'),
+            array('nucleus', 'nucleus'),
+            array('syllabus', 'syllabus'),
+            array('curriculum', 'curriculum'),
+            array('medium', 'medium'),
+            array('bacterium', 'bacterium'),
+            // new uncountables
+            array('news', 'news'),
+            array('aircraft', 'aircraft'),
+            array('software', 'software'),
+            array('hardware', 'hardware'),
+            array('luggage', 'luggage'),
+            array('advice', 'advice'),
+            array('traffic', 'traffic'),
+            array('furniture', 'furniture'),
+            array('metadata', 'metadata'),
+            array('multimedia', 'multimedia'),
+            // case preservation on irregulars
+            array('Children', 'Child'),
+            array('Men', 'Man'),
+            array('People', 'Person'),
+            array('Teeth', 'Tooth'),
+        );
+
+        foreach ($singularizeCases as $case)
+        {
+            list($input, $expected) = $case;
+            print "Testing $input singularizes to: $expected\n";
+            $this->assertEquals($expected, Inflect::singularize($input));
+        }
+
+        $pluralizeCases = array(
+            // new irregulars: singular -> plural
+            array('datum', 'data'),
+            array('criterion', 'criteria'),
+            array('phenomenon', 'phenomena'),
+            array('cactus', 'cacti'),
+            array('nucleus', 'nuclei'),
+            array('syllabus', 'syllabi'),
+            array('curriculum', 'curricula'),
+            array('medium', 'media'),
+            array('bacterium', 'bacteria'),
+            // already-plural guard
+            array('data', 'data'),
+            array('criteria', 'criteria'),
+            array('phenomena', 'phenomena'),
+            array('people', 'people'),
+            array('men', 'men'),
+            array('children', 'children'),
+            // uncountables
+            array('news', 'news'),
+            array('News', 'News'),
+            array('aircraft', 'aircraft'),
+            array('metadata', 'metadata'),
+            // case preservation on irregulars
+            array('Man', 'Men'),
+            array('Child', 'Children'),
+            array('Person', 'People'),
+            array('Tooth', 'Teeth'),
+        );
+
+        foreach ($pluralizeCases as $case)
+        {
+            list($input, $expected) = $case;
+            print "Testing $input pluralizes to: $expected\n";
+            $this->assertEquals($expected, Inflect::pluralize($input));
+        }
+	print "\n";
+    }
 }
