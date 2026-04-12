@@ -68,15 +68,24 @@ class Inflect
     );
 
     static $irregular = array(
-        'zombie' => 'zombies',
-        'move'   => 'moves',
-        'foot'   => 'feet',
-        'goose'  => 'geese',
-        'sex'    => 'sexes',
-        'child'  => 'children',
-        'man'    => 'men',
-        'tooth'  => 'teeth',
-        'person' => 'people'
+        'zombie'     => 'zombies',
+        'move'       => 'moves',
+        'foot'       => 'feet',
+        'goose'      => 'geese',
+        'sex'        => 'sexes',
+        'child'      => 'children',
+        'man'        => 'men',
+        'tooth'      => 'teeth',
+        'person'     => 'people',
+        'datum'      => 'data',
+        'criterion'  => 'criteria',
+        'phenomenon' => 'phenomena',
+        'cactus'     => 'cacti',
+        'nucleus'    => 'nuclei',
+        'syllabus'   => 'syllabi',
+        'curriculum' => 'curricula',
+        'medium'     => 'media',
+        'bacterium'  => 'bacteria'
     );
 
     static $uncountable = array(
@@ -90,7 +99,17 @@ class Inflect
         'information' => true,
         'equipment'   => true,
         'jeans'       => true,
-        'police'      => true
+        'police'      => true,
+        'news'        => true,
+        'aircraft'    => true,
+        'software'    => true,
+        'hardware'    => true,
+        'luggage'     => true,
+        'advice'      => true,
+        'traffic'     => true,
+        'furniture'   => true,
+        'metadata'    => true,
+        'multimedia'  => true
     );
 
     private static $pluralCache = array();
@@ -104,10 +123,20 @@ class Inflect
         if (!isset(self::$pluralCache[$string]))
         {
             // save some time in the case that singular and plural are the same
-            if (isset(self::$uncountable[$string]))
+            if (isset(self::$uncountable[strtolower($string)]))
             {
                 self::$pluralCache[$string] = $string;
                 return $string;
+            }
+
+            // already a known irregular plural — leave it alone (e.g. "people", "men")
+            foreach (self::$irregular as $plural)
+            {
+                if (strcasecmp($string, $plural) === 0)
+                {
+                    self::$pluralCache[$string] = $string;
+                    return $string;
+                }
             }
 
             // check for irregular singular forms
@@ -117,7 +146,7 @@ class Inflect
 
                 if (preg_match($pattern, $string))
                 {
-                    self::$pluralCache[$string] = preg_replace($pattern, $result, $string);
+                    self::$pluralCache[$string] = self::preserveFirstCase($string, preg_replace($pattern, $result, $string));
                     return self::$pluralCache[$string];
                 }
             }
@@ -150,6 +179,17 @@ class Inflect
                 self::$singularCache[$string] = $string;
                 return $string;
             }
+
+            // already a known irregular singular — leave it alone (e.g. "datum", "criterion")
+            foreach (self::$irregular as $singular => $_plural)
+            {
+                if (strcasecmp($string, $singular) === 0)
+                {
+                    self::$singularCache[$string] = $string;
+                    return $string;
+                }
+            }
+
             // check for irregular plural forms
             foreach (self::$irregular as $result => $pattern)
             {
@@ -157,7 +197,7 @@ class Inflect
 
                 if (preg_match($pattern, $string))
                 {
-                    self::$singularCache[$string] = preg_replace($pattern, $result, $string);
+                    self::$singularCache[$string] = self::preserveFirstCase($string, preg_replace($pattern, $result, $string));
                     return self::$singularCache[$string];
                 }
             }
@@ -176,6 +216,15 @@ class Inflect
         }
 
         return self::$singularCache[$string];
+    }
+
+    private static function preserveFirstCase($source, $replaced)
+    {
+        if ($source !== '' && $replaced !== '' && ctype_upper($source[0]) && ctype_lower($replaced[0]))
+        {
+            return ucfirst($replaced);
+        }
+        return $replaced;
     }
 
     public static function pluralizeIf($count, $string)
