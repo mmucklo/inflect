@@ -1,6 +1,10 @@
 Inflect
 =======
 
+[![CI](https://github.com/mmucklo/inflect/actions/workflows/ci.yml/badge.svg)](https://github.com/mmucklo/inflect/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/mmucklo/inflect/branch/master/graph/badge.svg)](https://codecov.io/gh/mmucklo/inflect)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mmucklo/inflect/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mmucklo/inflect/?branch=master)
+
 Inflect is an Inflector for PHP
 
 Installation:
