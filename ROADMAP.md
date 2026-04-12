@@ -26,15 +26,40 @@ The `php5.3` branch is maintained for back-porting critical fixes to environment
 
 ## 4. Correctness gaps
 
-- Expand irregulars: `mouse→mice`, `louse→lice`, `die→dice`, `datum→data`, `criterion→criteria`, `phenomenon→phenomena`, `index→indices`, `appendix→appendices`, `cactus→cacti`, `nucleus→nuclei`, `syllabus→syllabi`, `curriculum→curricula`, `medium→media`, `bacterium→bacteria`.
-- Expand uncountables: `news`, `aircraft`, `software`, `hardware`, `luggage`, `advice`, `traffic`, `furniture`.
-- Preserve case: `Business` currently normalizes to `business`; the original capitalization should be retained.
-- Fix `pluralizeIf(0, ...)` — today it pluralizes irregularly (e.g. "0 mouses").
+Largely shipped in #9 / #10. Remaining items:
+
+- Case preservation on the regex path (only the irregular path preserves case today; regex backreferences happen to preserve case in practice, but there is no guarantee for all-caps input like `BUSINESSES`).
+- Audit additional irregulars that are *suffix-safe* — `mouse/louse`, `index/appendix` are already handled correctly by regex; `die/dice` was rejected because its suffix match would break `indie → indice`.
 
 ## 5. Extensibility
 
 - Add runtime registration APIs: `addIrregular()`, `addUncountable()`, `addPluralRule()`, `addSingularRule()`. Users currently cannot extend rules without editing the class.
-- Consider a locale-hook so rule sets can be swapped (English-only today, but leave room in the API).
+
+## 5a. Locale-based inflections
+
+First-class support for multiple languages, not just English. All current rules (`$plural`, `$singular`, `$irregular`, `$uncountable`) are hard-coded English — the API should let a caller pick a locale at construction time and load the matching rule set.
+
+Prior exploration lives on the `feature/inflections` branch (WIP from 2014-ish). It sketched:
+
+- A constructor `new Inflect($locale = 'en')` alongside the existing static API.
+- A `src/Inflections/En.php` class holding the English rules as `protected static` arrays.
+- Moving `Inflect` up from `src/Inflect/Inflect.php` to `src/Inflect.php` (PSR-4 layout change).
+
+That branch is incomplete (tests were dropped, ROADMAP not yet present) and predates the correctness fixes now on `master`. Use it as design reference, not as a merge base.
+
+Concrete deliverables:
+
+- Introduce a `Locale` / `Inflections` contract (plural rules, singular rules, irregulars, uncountables).
+- Ship `En` as the built-in implementation; keep the static `Inflect::pluralize()` / `Inflect::singularize()` delegating to `En` for backwards compatibility.
+- Add an instance API (`new Inflect('en')`, `$inflect->pluralize(...)`) so callers can pick a locale without touching globals.
+- Add at least one additional locale as proof of concept — candidates: `Es` (Spanish), `Fr` (French), `De` (German). Each has distinct pluralization patterns (e.g. Spanish `-es` vs `-s` depending on final consonant, French silent-consonant rules, German umlaut + plural suffix classes).
+- Document how to register a third-party locale package (fits with the extensibility APIs in §5).
+
+Open design questions to resolve before implementation:
+
+- Should locale resolution be lazy (load rule class on first call) or eager?
+- How should the static API choose a default locale — class constant, env var, or setter? The branch's `new Inflect($locale = 'en')` signature only addresses the instance case.
+- Does per-locale caching share a namespace, or is each locale's cache isolated?
 
 ## 6. Documentation
 
@@ -63,5 +88,6 @@ The `php5.3` branch is maintained for back-porting critical fixes to environment
 ## Phasing
 
 - **v2.0** — items 1, 2, 3 (breaking, one release).
-- **v2.1** — items 4, 5 (additive).
+- **v2.1** — remaining items in 4, plus 5 (additive).
+- **v2.2** — item 5a (locale-based inflections; introduces new API surface but is additive).
 - **ongoing** — items 6, 7, 8.
