@@ -34,6 +34,9 @@ final class InflectTest extends TestCase
         $this->assertSame($expected, Inflect::pluralizeIf($count, $noun));
     }
 
+    /**
+     * @return array<int, array{int, string, string}>
+     */
     public static function pluralizeIfProvider(): array
     {
         return [
@@ -47,6 +50,9 @@ final class InflectTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<int, array{string, string}>
+     */
     public static function singularizeProvider(): array
     {
         return [
@@ -116,6 +122,9 @@ final class InflectTest extends TestCase
         ];
     }
 
+    /**
+     * @return array<int, array{string, string}>
+     */
     public static function pluralizeProvider(): array
     {
         return [
