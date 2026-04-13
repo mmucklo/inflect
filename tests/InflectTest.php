@@ -1,181 +1,145 @@
 <?php
 
-require_once(__DIR__ . '/../vendor/autoload.php');
-require_once(__DIR__ . '/../src/Inflect/Inflect.php');
+declare(strict_types=1);
+
+namespace Inflect\Tests;
 
 use Inflect\Inflect;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
-class InflectTest extends PHPUnit_Framework_TestCase
+final class InflectTest extends TestCase
 {
-    public function testSingularize()
+    #[DataProvider('singularizeProvider')]
+    public function testSingularize(string $input, string $expected): void
     {
-        $inflections = array('ox' => 'ox',
-                'cats' => 'cat',
-                'oxen' => 'ox',
-                'cats' => 'cat',
-                'purses' => 'purse',
-                'analyses' => 'analysis',
-                'houses' => 'house',
-                'sheep' => 'sheep',
-                'buses' => 'bus',
-                'uses' => 'use',
-                'databases' => 'database',
-                'quizzes' => 'quiz',
-                'matrices' => 'matrix',
-                'vertices' => 'vertex',
-                'alias' => 'alias',
-                'aliases' => 'alias',
-                'octopi' => 'octopus',
-                'axes' => 'axis',
-                'axis' => 'axis',
-                'crises' => 'crisis',
-                'crisis' => 'crisis',
-                'shoes' => 'shoe',
-                'foes' => 'foe',
-                'pianos' => 'piano',
-                'wierdos' => 'wierdo',
-                'toes' => 'toe',
-                'banjoes' => 'banjo',
-                'vetoes' => 'veto',
-                'cows' => 'cow',
-                'businesses' => 'business',
-                'business' => 'business',
-                'wellness' => 'wellness',
-            );
-
-        foreach ($inflections as $key => $value)
-        {
-            print "Testing $key singularizes to: $value\n";
-            $this->assertEquals($value, Inflect::singularize($key));
-        }
-
-	print "\n";
+        $this->assertSame($expected, Inflect::singularize($input));
     }
 
-    public function testPluralize()
+    #[DataProvider('pluralizeProvider')]
+    public function testPluralize(string $input, string $expected): void
     {
-        $inflections = array('oxen' => 'ox',
-                'cats' => 'cat',
-                'cats' => 'cat',
-                'purses' => 'purse',
-                'analyses' => 'analysis',
-                'houses' => 'house',
-                'sheep' => 'sheep',
-                'buses' => 'bus',
-                'axes' => 'axis',
-                'uses' => 'use',
-                'databases' => 'database',
-                'quizzes' => 'quiz',
-                'matrices' => 'matrix',
-                'vertices' => 'vertex',
-                'aliases' => 'aliases',
-                'aliases' => 'alias',
-                'octopi' => 'octopus',
-                'axes' => 'axis',
-                'crises' => 'crisis',
-                'crises' => 'crises',
-                'shoes' => 'shoe',
-                'foes' => 'foe',
-                'pianos' => 'piano',
-                'wierdos' => 'wierdo',
-                'toes' => 'toe',
-                'banjos' => 'banjo',
-                'vetoes' => 'veto',
-                'cows' => 'cow',
-                );
-        foreach ($inflections as $key => $value)
-        {
-            print "Testing $value pluralizes to: $key\n";
-            $this->assertEquals($key, Inflect::pluralize($value));
-        }
-	print "\n";
+        $this->assertSame($expected, Inflect::pluralize($input));
     }
 
-    // Uses a list of [input, expected] pairs to avoid duplicate-key dedup.
-    public function testNewIrregularsAndGuards()
+    public static function singularizeProvider(): array
     {
-        $singularizeCases = array(
-            // new irregulars: plural -> singular
-            array('data', 'datum'),
-            array('criteria', 'criterion'),
-            array('phenomena', 'phenomenon'),
-            array('cacti', 'cactus'),
-            array('nuclei', 'nucleus'),
-            array('syllabi', 'syllabus'),
-            array('curricula', 'curriculum'),
-            array('media', 'medium'),
-            array('bacteria', 'bacterium'),
-            // already-singular guard: singular -> singular
-            array('datum', 'datum'),
-            array('criterion', 'criterion'),
-            array('phenomenon', 'phenomenon'),
-            array('cactus', 'cactus'),
-            array('nucleus', 'nucleus'),
-            array('syllabus', 'syllabus'),
-            array('curriculum', 'curriculum'),
-            array('medium', 'medium'),
-            array('bacterium', 'bacterium'),
-            // new uncountables
-            array('news', 'news'),
-            array('aircraft', 'aircraft'),
-            array('software', 'software'),
-            array('hardware', 'hardware'),
-            array('luggage', 'luggage'),
-            array('advice', 'advice'),
-            array('traffic', 'traffic'),
-            array('furniture', 'furniture'),
-            array('metadata', 'metadata'),
-            array('multimedia', 'multimedia'),
-            // case preservation on irregulars
-            array('Children', 'Child'),
-            array('Men', 'Man'),
-            array('People', 'Person'),
-            array('Teeth', 'Tooth'),
-        );
+        return [
+            ['ox', 'ox'],
+            ['oxen', 'ox'],
+            ['cats', 'cat'],
+            ['purses', 'purse'],
+            ['analyses', 'analysis'],
+            ['houses', 'house'],
+            ['sheep', 'sheep'],
+            ['buses', 'bus'],
+            ['uses', 'use'],
+            ['databases', 'database'],
+            ['quizzes', 'quiz'],
+            ['matrices', 'matrix'],
+            ['vertices', 'vertex'],
+            ['alias', 'alias'],
+            ['aliases', 'alias'],
+            ['octopi', 'octopus'],
+            ['axes', 'axis'],
+            ['axis', 'axis'],
+            ['crises', 'crisis'],
+            ['crisis', 'crisis'],
+            ['shoes', 'shoe'],
+            ['foes', 'foe'],
+            ['pianos', 'piano'],
+            ['wierdos', 'wierdo'],
+            ['toes', 'toe'],
+            ['banjoes', 'banjo'],
+            ['vetoes', 'veto'],
+            ['cows', 'cow'],
+            ['businesses', 'business'],
+            ['business', 'business'],
+            ['wellness', 'wellness'],
+            ['data', 'datum'],
+            ['criteria', 'criterion'],
+            ['phenomena', 'phenomenon'],
+            ['cacti', 'cactus'],
+            ['nuclei', 'nucleus'],
+            ['syllabi', 'syllabus'],
+            ['curricula', 'curriculum'],
+            ['media', 'medium'],
+            ['bacteria', 'bacterium'],
+            ['datum', 'datum'],
+            ['criterion', 'criterion'],
+            ['phenomenon', 'phenomenon'],
+            ['cactus', 'cactus'],
+            ['nucleus', 'nucleus'],
+            ['syllabus', 'syllabus'],
+            ['curriculum', 'curriculum'],
+            ['medium', 'medium'],
+            ['bacterium', 'bacterium'],
+            ['news', 'news'],
+            ['aircraft', 'aircraft'],
+            ['software', 'software'],
+            ['hardware', 'hardware'],
+            ['luggage', 'luggage'],
+            ['advice', 'advice'],
+            ['traffic', 'traffic'],
+            ['furniture', 'furniture'],
+            ['metadata', 'metadata'],
+            ['multimedia', 'multimedia'],
+            ['Children', 'Child'],
+            ['Men', 'Man'],
+            ['People', 'Person'],
+            ['Teeth', 'Tooth'],
+        ];
+    }
 
-        foreach ($singularizeCases as $case)
-        {
-            list($input, $expected) = $case;
-            print "Testing $input singularizes to: $expected\n";
-            $this->assertEquals($expected, Inflect::singularize($input));
-        }
-
-        $pluralizeCases = array(
-            // new irregulars: singular -> plural
-            array('datum', 'data'),
-            array('criterion', 'criteria'),
-            array('phenomenon', 'phenomena'),
-            array('cactus', 'cacti'),
-            array('nucleus', 'nuclei'),
-            array('syllabus', 'syllabi'),
-            array('curriculum', 'curricula'),
-            array('medium', 'media'),
-            array('bacterium', 'bacteria'),
-            // already-plural guard
-            array('data', 'data'),
-            array('criteria', 'criteria'),
-            array('phenomena', 'phenomena'),
-            array('people', 'people'),
-            array('men', 'men'),
-            array('children', 'children'),
-            // uncountables
-            array('news', 'news'),
-            array('News', 'News'),
-            array('aircraft', 'aircraft'),
-            array('metadata', 'metadata'),
-            // case preservation on irregulars
-            array('Man', 'Men'),
-            array('Child', 'Children'),
-            array('Person', 'People'),
-            array('Tooth', 'Teeth'),
-        );
-
-        foreach ($pluralizeCases as $case)
-        {
-            list($input, $expected) = $case;
-            print "Testing $input pluralizes to: $expected\n";
-            $this->assertEquals($expected, Inflect::pluralize($input));
-        }
-	print "\n";
+    public static function pluralizeProvider(): array
+    {
+        return [
+            ['ox', 'oxen'],
+            ['cat', 'cats'],
+            ['purse', 'purses'],
+            ['analysis', 'analyses'],
+            ['house', 'houses'],
+            ['sheep', 'sheep'],
+            ['bus', 'buses'],
+            ['axis', 'axes'],
+            ['use', 'uses'],
+            ['database', 'databases'],
+            ['quiz', 'quizzes'],
+            ['matrix', 'matrices'],
+            ['vertex', 'vertices'],
+            ['alias', 'aliases'],
+            ['octopus', 'octopi'],
+            ['crisis', 'crises'],
+            ['shoe', 'shoes'],
+            ['foe', 'foes'],
+            ['piano', 'pianos'],
+            ['wierdo', 'wierdos'],
+            ['toe', 'toes'],
+            ['veto', 'vetoes'],
+            ['cow', 'cows'],
+            ['datum', 'data'],
+            ['criterion', 'criteria'],
+            ['phenomenon', 'phenomena'],
+            ['cactus', 'cacti'],
+            ['nucleus', 'nuclei'],
+            ['syllabus', 'syllabi'],
+            ['curriculum', 'curricula'],
+            ['medium', 'media'],
+            ['bacterium', 'bacteria'],
+            ['data', 'data'],
+            ['criteria', 'criteria'],
+            ['phenomena', 'phenomena'],
+            ['people', 'people'],
+            ['men', 'men'],
+            ['children', 'children'],
+            ['news', 'news'],
+            ['News', 'News'],
+            ['aircraft', 'aircraft'],
+            ['metadata', 'metadata'],
+            ['Man', 'Men'],
+            ['Child', 'Children'],
+            ['Person', 'People'],
+            ['Tooth', 'Teeth'],
+        ];
     }
 }
