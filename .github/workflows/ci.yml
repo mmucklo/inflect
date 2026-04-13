@@ -55,9 +55,11 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: Install ocular
+        if: matrix.php == '8.3'
+        run: composer global require scrutinizer/ocular --no-interaction --no-progress
+
       - name: Upload coverage to Scrutinizer
         if: matrix.php == '8.3'
         continue-on-error: true
-        run: |
-          wget -q https://scrutinizer-ci.com/ocular.phar
-          php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+        run: $(composer global config bin-dir --absolute --quiet)/ocular code-coverage:upload --format=php-clover coverage.clover
