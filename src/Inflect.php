@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inflect;
 
-class Inflect
+final class Inflect
 {
-    static $plural = array(
+    private static array $plural = [
         '/(quiz)$/i'               => "$1zes",
         '/^(oxen)$/i'              => "$1",
         '/^(ox)$/i'                => "$1en",
@@ -19,7 +21,7 @@ class Inflect
         '/sis$/i'                  => "ses",
         '/([ti])a$/i'              => "$1a",
         '/([ti])um$/i'             => "$1a",
-        '/(buffal|tomat|potat|ech|her|vet)o$/i'=> "$1oes",
+        '/(buffal|tomat|potat|ech|her|vet)o$/i' => "$1oes",
         '/(bu)s$/i'                => "$1ses",
         '/(alias|status)$/i'       => "$1es",
         '/(octop|vir)i$/i'         => "$1i",
@@ -27,10 +29,10 @@ class Inflect
         '/(ax|test)is$/i'          => "$1es",
         '/(us)$/i'                 => "$1es",
         '/s$/i'                    => "s",
-        '/$/'                      => "s"
-    );
+        '/$/'                      => "s",
+    ];
 
-    static $singular = array(
+    private static array $singular = [
         '/(ss)$/i'                  => "$1",
         '/(database)s$/i'           => "$1",
         '/(quiz)zes$/i'             => "$1",
@@ -64,10 +66,10 @@ class Inflect
         '/(h|bl)ouses$/i'           => "$1ouse",
         '/(corpse)s$/i'             => "$1",
         '/(use)s$/i'                => "$1",
-        '/s$/i'                     => ""
-    );
+        '/s$/i'                     => "",
+    ];
 
-    static $irregular = array(
+    private static array $irregular = [
         'zombie'     => 'zombies',
         'move'       => 'moves',
         'foot'       => 'feet',
@@ -85,10 +87,10 @@ class Inflect
         'syllabus'   => 'syllabi',
         'curriculum' => 'curricula',
         'medium'     => 'media',
-        'bacterium'  => 'bacteria'
-    );
+        'bacterium'  => 'bacteria',
+    ];
 
-    static $uncountable = array(
+    private static array $uncountable = [
         'sheep'       => true,
         'fish'        => true,
         'deer'        => true,
@@ -109,104 +111,91 @@ class Inflect
         'traffic'     => true,
         'furniture'   => true,
         'metadata'    => true,
-        'multimedia'  => true
-    );
+        'multimedia'  => true,
+    ];
 
-    private static $pluralCache = array();
-    private static $singularCache = array();
+    private static array $pluralCache = [];
+    private static array $singularCache = [];
 
-    public static function pluralize($string)
+    public static function pluralize(string $string): string
     {
-        if (!$string)
-            return;
+        if ($string === '') {
+            return '';
+        }
 
-        if (!isset(self::$pluralCache[$string]))
-        {
+        if (!isset(self::$pluralCache[$string])) {
             // save some time in the case that singular and plural are the same
-            if (isset(self::$uncountable[strtolower($string)]))
-            {
+            if (isset(self::$uncountable[strtolower($string)])) {
                 self::$pluralCache[$string] = $string;
                 return $string;
             }
 
             // already a known irregular plural — leave it alone (e.g. "people", "men")
-            foreach (self::$irregular as $plural)
-            {
-                if (strcasecmp($string, $plural) === 0)
-                {
+            foreach (self::$irregular as $plural) {
+                if (strcasecmp($string, $plural) === 0) {
                     self::$pluralCache[$string] = $string;
                     return $string;
                 }
             }
 
             // check for irregular singular forms
-            foreach (self::$irregular as $pattern => $result)
-            {
+            foreach (self::$irregular as $pattern => $result) {
                 $pattern = '/' . $pattern . '$/i';
 
-                if (preg_match($pattern, $string))
-                {
+                if (preg_match($pattern, $string)) {
                     self::$pluralCache[$string] = self::preserveFirstCase($string, preg_replace($pattern, $result, $string));
                     return self::$pluralCache[$string];
                 }
             }
 
             // check for matches using regular expressions
-            foreach (self::$plural as $pattern => $result)
-            {
-                if (preg_match($pattern, $string))
-                {
-                    self::$pluralCache[$string] = $result = preg_replace($pattern, $result, $string);
+            foreach (self::$plural as $pattern => $result) {
+                if (preg_match($pattern, $string)) {
+                    self::$pluralCache[$string] = preg_replace($pattern, $result, $string);
                     return self::$pluralCache[$string];
                 }
             }
 
             self::$pluralCache[$string] = $string;
         }
+
         return self::$pluralCache[$string];
     }
 
-    public static function singularize($string)
+    public static function singularize(string $string): string
     {
-        if (!$string)
-            return;
+        if ($string === '') {
+            return '';
+        }
 
-        if (!isset(self::$singularCache[$string]))
-        {
+        if (!isset(self::$singularCache[$string])) {
             // save some time in the case that singular and plural are the same
-            if (isset(self::$uncountable[strtolower($string)]))
-            {
+            if (isset(self::$uncountable[strtolower($string)])) {
                 self::$singularCache[$string] = $string;
                 return $string;
             }
 
             // already a known irregular singular — leave it alone (e.g. "datum", "criterion")
-            foreach (self::$irregular as $singular => $_plural)
-            {
-                if (strcasecmp($string, $singular) === 0)
-                {
+            foreach (self::$irregular as $singular => $_plural) {
+                if (strcasecmp($string, $singular) === 0) {
                     self::$singularCache[$string] = $string;
                     return $string;
                 }
             }
 
             // check for irregular plural forms
-            foreach (self::$irregular as $result => $pattern)
-            {
+            foreach (self::$irregular as $result => $pattern) {
                 $pattern = '/' . $pattern . '$/i';
 
-                if (preg_match($pattern, $string))
-                {
+                if (preg_match($pattern, $string)) {
                     self::$singularCache[$string] = self::preserveFirstCase($string, preg_replace($pattern, $result, $string));
                     return self::$singularCache[$string];
                 }
             }
 
             // check for matches using regular expressions
-            foreach (self::$singular as $pattern => $result)
-            {
-                if (preg_match($pattern, $string))
-                {
+            foreach (self::$singular as $pattern => $result) {
+                if (preg_match($pattern, $string)) {
                     self::$singularCache[$string] = preg_replace($pattern, $result, $string);
                     return self::$singularCache[$string];
                 }
@@ -218,21 +207,21 @@ class Inflect
         return self::$singularCache[$string];
     }
 
-    private static function preserveFirstCase($source, $replaced)
+    public static function pluralizeIf(int $count, string $string): string
     {
-        if ($source !== '' && $replaced !== '' && ctype_upper($source[0]) && ctype_lower($replaced[0]))
-        {
+        if ($count === 1) {
+            return "1 $string";
+        }
+
+        return "$count " . self::pluralize($string);
+    }
+
+    private static function preserveFirstCase(string $source, string $replaced): string
+    {
+        if ($source !== '' && $replaced !== '' && ctype_upper($source[0]) && ctype_lower($replaced[0])) {
             return ucfirst($replaced);
         }
+
         return $replaced;
     }
-
-    public static function pluralizeIf($count, $string)
-    {
-        if ($count == 1)
-            return "1 $string";
-        else
-            return "$count " . self::pluralize($string);
-    }
 }
-

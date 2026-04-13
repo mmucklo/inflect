@@ -22,6 +22,31 @@ final class InflectTest extends TestCase
         $this->assertSame($expected, Inflect::pluralize($input));
     }
 
+    public function testEmptyStringReturnsEmptyString(): void
+    {
+        $this->assertSame('', Inflect::pluralize(''));
+        $this->assertSame('', Inflect::singularize(''));
+    }
+
+    #[DataProvider('pluralizeIfProvider')]
+    public function testPluralizeIf(int $count, string $noun, string $expected): void
+    {
+        $this->assertSame($expected, Inflect::pluralizeIf($count, $noun));
+    }
+
+    public static function pluralizeIfProvider(): array
+    {
+        return [
+            [1, 'cat', '1 cat'],
+            [2, 'cat', '2 cats'],
+            [0, 'cat', '0 cats'],
+            [1, 'person', '1 person'],
+            [3, 'person', '3 people'],
+            [0, 'person', '0 people'],
+            [5, 'datum', '5 data'],
+        ];
+    }
+
     public static function singularizeProvider(): array
     {
         return [
