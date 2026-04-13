@@ -46,6 +46,14 @@ jobs:
       - name: Run PHPUnit
         run: vendor/bin/phpunit --coverage-clover=coverage.clover
 
+      - name: Run PHPStan
+        if: matrix.php == '8.3'
+        run: vendor/bin/phpstan analyse --no-progress --error-format=github
+
+      - name: Run PHP-CS-Fixer
+        if: matrix.php == '8.3'
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+
       - name: Upload coverage to Codecov
         if: matrix.php == '8.3'
         uses: codecov/codecov-action@v4
