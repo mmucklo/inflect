@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Inflect\Tests;
 
 use Inflect\Inflect;
+use Inflect\Locale\En;
+use Inflect\Locale\Locale;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -175,5 +177,107 @@ final class InflectTest extends TestCase
             ['Person', 'People'],
             ['Tooth', 'Teeth'],
         ];
+    }
+
+    // -- Instance API tests --
+
+    public function testInstancePluralSingular(): void
+    {
+        $inflect = new Inflect('en');
+        $this->assertSame('cats', $inflect->plural('cat'));
+        $this->assertSame('cat', $inflect->singular('cats'));
+        $this->assertSame('people', $inflect->plural('person'));
+        $this->assertSame('person', $inflect->singular('people'));
+    }
+
+    public function testInstancePluralIf(): void
+    {
+        $inflect = new Inflect();
+        $this->assertSame('1 cat', $inflect->pluralIf(1, 'cat'));
+        $this->assertSame('3 cats', $inflect->pluralIf(3, 'cat'));
+        $this->assertSame('0 people', $inflect->pluralIf(0, 'person'));
+    }
+
+    public function testInstanceConstructorWithLocaleObject(): void
+    {
+        $locale = new En();
+        $inflect = new Inflect($locale);
+        $this->assertSame('cats', $inflect->plural('cat'));
+        $this->assertSame($locale, $inflect->getLocale());
+    }
+
+    public function testInstanceIsolation(): void
+    {
+        $a = new Inflect();
+        $b = new Inflect();
+
+        $a->getLocale()->addIrregular('platypus', 'platypuses');
+        $this->assertSame('platypuses', $a->plural('platypus'));
+        // b has its own En instance — not affected
+        $this->assertSame('platypus', $b->singular('platypuses'));
+    }
+
+    // -- Extension API tests --
+
+    public function testAddIrregular(): void
+    {
+        $locale = new En();
+        $locale->addIrregular('formula', 'formulae');
+        $this->assertSame('formulae', $locale->pluralize('formula'));
+        $this->assertSame('formula', $locale->singularize('formulae'));
+    }
+
+    public function testAddUncountable(): void
+    {
+        $locale = new En();
+        $locale->addUncountable('moose');
+        $this->assertSame('moose', $locale->pluralize('moose'));
+        $this->assertSame('moose', $locale->singularize('moose'));
+    }
+
+    public function testAddPluralRule(): void
+    {
+        $locale = new En();
+        $locale->addPluralRule('/^(platypus)$/i', '$1es');
+        $this->assertSame('platypuses', $locale->pluralize('platypus'));
+    }
+
+    public function testAddSingularRule(): void
+    {
+        $locale = new En();
+        $locale->addSingularRule('/(platypus)es$/i', '$1');
+        $this->assertSame('platypus', $locale->singularize('platypuses'));
+    }
+
+    public function testExtensionInvalidatesCache(): void
+    {
+        $locale = new En();
+        $this->assertSame('formulae', $locale->singularize('formulae'));
+        $locale->addIrregular('formula', 'formulae');
+        $this->assertSame('formula', $locale->singularize('formulae'));
+    }
+
+    // -- Locale registration --
+
+    public function testRegisterLocale(): void
+    {
+        Inflect::registerLocale('test-en', En::class);
+        $inflect = new Inflect('test-en');
+        $this->assertSame('cats', $inflect->plural('cat'));
+    }
+
+    public function testUnknownLocaleThrows(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new Inflect('nonexistent-locale');
+    }
+
+    // -- Static extension proxy --
+
+    public function testStaticAddIrregularProxy(): void
+    {
+        Inflect::addIrregular('dwarf', 'dwarves');
+        $this->assertSame('dwarves', Inflect::pluralize('dwarf'));
+        $this->assertSame('dwarf', Inflect::singularize('dwarves'));
     }
 }
