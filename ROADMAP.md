@@ -229,3 +229,62 @@ Deferred (separate PRs):
 - **v2.1** — items 5 + 5a landed together (the extension API lives on `Locale`; splitting them would be churn). Adds the instance API, `Locale` abstract class, `En` as first-party locale, and proxy extension methods on `Inflect`. Additive, no breaking changes.
 - **v2.2** — at least one non-English locale (candidate: `Es`, `Fr`, or `De`) as proof the `Locale` contract holds for non-trivial morphology. Possibly `infection` + `phpbench` tooling if not done earlier.
 - **v3.x (conditional)** — Path B: extract `Inflect\Locale\*` into `mmucklo/inflections` as a sibling package. Triggers are listed in §5a.
+
+## Beyond v3.x — strategic directions
+
+Four themes for where the library could go once v3.x stabilizes. Not commitments — captured here so the decision space is explicit when we get there. Ranked roughly by how much each would change the library's identity.
+
+### 9. Cross the binary-plural ceiling (CLDR plural categories)
+
+The current API assumes **singular / plural is a binary**. It isn't in half the world's languages:
+
+- Russian uses three countable forms (`1 книга`, `2 книги`, `5 книг`).
+- Welsh uses four. Arabic uses six. Polish, Romanian, Lithuanian each have their own category rules.
+- Unicode's [Common Locale Data Repository](https://cldr.unicode.org/) defines six categories (`zero`, `one`, `two`, `few`, `many`, `other`). PHP already ships `ext-intl` with CLDR plural rules built in.
+
+**Concrete API direction:**
+
+```php
+// Today
+Inflect::pluralizeIf(5, 'book');  // '5 books' — English-only assumption
+
+// Future
+$inflect->pluralForm(5, [
+    'one' => 'book',
+    'few' => 'books',
+    'many' => 'books',
+    'other' => 'books',
+]);                               // returns 'books'; locale-aware category lookup
+```
+
+Locales delegate category resolution to `ext-intl` (which consults CLDR) rather than hand-maintained regex tables. This is the single move that turns the library from "English inflector with locale hooks" into a genuinely multilingual tool, while converging with a maintained external standard.
+
+**Scope:** one new method, one category enum, locale implementations that call `MessageFormatter::formatMessage` or `NumberFormatter` for the category.
+
+### 10. Expand from nouns to morphology
+
+Today the library handles noun singular ↔ plural (plus `pluralizeIf` cosmetic prefixing). A full morphological toolkit would add:
+
+- **Verb conjugation** — `conjugate('run', tense: 'past') === 'ran'`. Rails has this surface; irregular-verb tables are ~200 words per language.
+- **Indefinite articles** — `indefiniteArticle('apple') === 'an'`. Locale-specific (French `à le → au`).
+- **Ordinals** — `ordinalize(3) === '3rd'`. Bounded, per-locale.
+- **Case / gender agreement** — required for real German / Slavic support. API needs `$gender`, `$case` parameters. Big cognitive-load bump; may not be worth it if the target audience is Rails-refugees rather than NLP users.
+
+Where this theme stops determines whether the library stays a "small useful utility" or becomes a "morphological toolkit." Both are legitimate products; they attract different users.
+
+### 11. Locale data quality
+
+Regex-rule inflectors lose on unseen words — loanwords, coinages, compounds. Two ways to push the accuracy ceiling:
+
+- **Test corpora per locale.** Ship `(lemma, form, features)` triples from a known-good source ([Wiktionary](https://en.wiktionary.org/) dumps, [UniMorph](https://unimorph.github.io/)) and run the inflector against them in CI with an accuracy metric. Rule additions become measurable — "this regex lifts English noun accuracy from 92.3% → 94.1% on UniMorph v1.2." Turns inflection from folklore into engineering.
+- **Offline ML fallback.** When regex rules don't match, fall back to a small byte-level seq2seq model via ONNX Runtime + FFI. Heavy dependency story; probably a separate opt-in `mmucklo/inflect-neural` package. The accuracy ceiling jumps, at the cost of a binary artifact.
+
+### 12. Ecosystem moves (zero new features, large adoption impact)
+
+- **Symfony / Laravel bridges** — first-party integration packages (`mmucklo/inflect-bundle`, `mmucklo/inflect-laravel`) that register the inflector in each framework's service container with one `composer require`. Biggest adoption lift per hour of work — both frameworks ship their own inflectors today and users would otherwise have to wire Inflect in manually.
+- **Composer-plugin locale discovery** — third-party locale packages (`someone/inflect-pl`, `acme/inflect-fr-quebec`) auto-register on install through a [composer-plugin](https://getcomposer.org/doc/articles/plugins.md). Adding a locale becomes a one-liner for consumers.
+- **Benchmark-as-identity** — this library's pitch is "*memoizing* inflector." Publish concrete numbers (via `phpbench`, roadmap §7) vs Doctrine Inflector and Symfony String on the README, committed to never regressing them. Makes the performance claim verifiable instead of rhetorical.
+
+### Headline recommendation
+
+If we pick only one of these four: **§9 (CLDR plural categories).** Scoped, rides on a maintained external standard (Unicode CLDR), doesn't change the library's identity — but lifts its ceiling from "English-ish" to "genuinely multilingual." The other themes turn Inflect into a different product; §9 makes the current product complete.
