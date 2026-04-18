@@ -280,4 +280,30 @@ final class InflectTest extends TestCase
         $this->assertSame('dwarves', Inflect::pluralize('dwarf'));
         $this->assertSame('dwarf', Inflect::singularize('dwarves'));
     }
+
+    public function testStaticAddUncountableProxy(): void
+    {
+        Inflect::addUncountable('bison');
+        $this->assertSame('bison', Inflect::pluralize('bison'));
+    }
+
+    public function testStaticAddPluralRuleProxy(): void
+    {
+        Inflect::addPluralRule('/^(chateau)$/i', '$1x');
+        $this->assertSame('chateaux', Inflect::pluralize('chateau'));
+    }
+
+    public function testStaticAddSingularRuleProxy(): void
+    {
+        Inflect::addSingularRule('/(chateau)x$/i', '$1');
+        $this->assertSame('chateau', Inflect::singularize('chateaux'));
+    }
+
+    public function testPluralizeNoRuleMatchReturnsInput(): void
+    {
+        // En has a catch-all rule ('/$/' => 's') so we use a bare locale
+        // with no rules to exercise the no-match fallback path.
+        $locale = new class () extends Locale {};
+        $this->assertSame('hello', $locale->pluralize('hello'));
+    }
 }
